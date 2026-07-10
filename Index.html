@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <style>
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      background-color: #f0f2f5; 
+      margin: 0; 
+      padding: 20px; 
+      color: #333; 
+    }
+    .container { 
+      max-width: 600px; 
+      margin: 0 auto; 
+      background: white; 
+      padding: 30px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+    }
+    .header-banner { 
+      background: linear-gradient(135deg, #5b7fff 0%, #1700b3 100%); 
+      height: 110px; 
+      border-radius: 8px 8px 0 0; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      color: white; 
+      margin: -30px -30px 30px -30px; 
+      padding: 0 30px;
+    }
+    .header-left { display: flex; align-items: center; gap: 15px; }
+    .header-icon { font-size: 45px; }
+    .header-title { font-size: 28px; font-weight: 800; line-height: 1.1; }
+    .header-logo { width: 70px; height: 70px; border-radius: 50%; background: white; padding: 2px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+    h1 { display: none; }
+    p.subtitle { margin-top: -10px; }
+    h1 { text-align: center; font-size: 24px; color: #1e3a8a; margin-bottom: 5px; }
+    p.subtitle { text-align: center; color: #6b7280; font-size: 14px; margin-bottom: 30px; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+    .required { color: #ef4444; }
+    input[type="text"], input[type="email"], select, textarea {
+      width: 100%; 
+      padding: 10px; 
+      border: 1px solid #d1d5db; 
+      border-radius: 4px; 
+      box-sizing: border-box; 
+      font-family: inherit;
+    }
+    input[type="text"]:focus, input[type="email"]:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+    textarea { height: 100px; resize: vertical; }
+    .radio-group { display: flex; flex-direction: column; gap: 8px; }
+    .radio-label { display: flex; align-items: center; font-weight: normal; font-size: 14px; cursor: pointer; }
+    .radio-label input { margin-right: 8px; width: 16px; height: 16px; accent-color: #3b82f6; }
+    .file-drop { 
+      border: 2px dashed #d1d5db; 
+      border-radius: 4px; 
+      padding: 30px; 
+      text-align: center; 
+      color: #6b7280; 
+      cursor: pointer; 
+      transition: all 0.2s;
+    }
+    .file-drop:hover { background-color: #f9fafb; border-color: #9ca3af; }
+    button { 
+      background-color: #3b82f6; 
+      color: white; 
+      border: none; 
+      padding: 14px 24px; 
+      font-size: 16px; 
+      font-weight: 600; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      width: 100%; 
+      transition: background-color 0.2s; 
+    }
+    button:hover { background-color: #2563eb; }
+    button:disabled { background-color: #9ca3af; cursor: not-allowed; }
+    .loading { display: none; text-align: center; margin-top: 15px; color: #6b7280; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-banner">
+      <div class="header-left">
+        <div class="header-icon">🛠️</div>
+        <div class="header-title">MAINTENANCE<br>REPORT FORM</div>
+      </div>
+      <img src="https://anglosingapore.ac.th/wp-content/uploads/2021/04/Anglo-logo.png" class="header-logo" alt="Logo" onerror="this.style.display='none'">
+    </div>
+    <p class="subtitle">C64 แบบฟอร์มรายงานสิ่งอำนวยความสะดวกและการบำรุงรักษา</p>
+    
+    <form id="maintenanceForm" onsubmit="submitForm(event)">
+      <!-- email -->
+      <div class="form-group">
+        <label>Email Address (อีเมล): <span class="required">*</span></label>
+        <input type="email" id="email" required placeholder="youremail@anglosingapore.ac.th">
+      </div>
+      
+      <!-- staff name -->
+      <div class="form-group">
+        <label>Staff Name (ชื่อพนักงาน): <span class="required">*</span></label>
+        <input type="text" id="staffName" required>
+      </div>
+      
+      <!-- location -->
+      <div class="form-group">
+        <label>Location (สถานที่): <span class="required">*</span></label>
+        <select id="location" required>
+<option value="">Select a location...</option>
+          <option value="A102 Classroom">A102 Classroom</option>
+          <option value="A104 Classroom">A104 Classroom</option>
+          <option value="A105 Classroom">A105 Classroom</option>
+          <option value="A106 Classroom">A106 Classroom</option>
+          <option value="A107 Classroom">A107 Classroom</option>
+          <option value="A108 Classroom">A108 Classroom</option>
+          <option value="A109 Classroom">A109 Classroom</option>
+          <option value="A1 Male Toilet">A1 Male Toilet</option>
+          <option value="A1 Female Toilet">A1 Female Toilet</option>
+          <option value="A1 Infirmary">A1 Infirmary</option>
+          <option value="A1 Student Affairs and Admissions Office">A1 Student Affairs and Admissions Office</option>
+          <option value="A1 Anglo Shop">A1 Anglo Shop</option>
+          <option value="A1 Accounting Office">A1 Accounting Office</option>
+          <option value="A1 Thai Principal">A1 Thai Principal</option>
+          <option value="A1 VISA">A1 VISA</option>
+          <option value="A1 Information and Meeting Rooms">A1 Information and Meeting Rooms</option>
+          <option value="A1 Conference Room">A1 Conference Room</option>
+          <option value="A1-A Male Toilet Guest">A1-A Male Toilet Guest</option>
+          <option value="A1-B Female Toilet Guest">A1-B Female Toilet Guest</option>
+          <option value="A200 Management Office">A200 Management Office</option>
+          <option value="A200/A Director of Schools Office">A200/A Director of Schools Office</option>
+          <option value="A200/B Printing Room">A200/B Printing Room</option>
+          <option value="A200/C Conference Room">A200/C Conference Room</option>
+          <option value="A200/D Kinder Primary Principal">A200/D Kinder Primary Principal</option>
+          <option value="A200/E Secondary Principal">A200/E Secondary Principal</option>
+          <option value="A200/F Finance Director">A200/F Finance Director</option>
+          <option value="A200/G School Superintendent">A200/G School Superintendent</option>
+          <option value="A200/H Registrar Stockroom">A200/H Registrar Stockroom</option>
+          <option value="A200/I Small Conference Office">A200/I Small Conference Office</option>
+          <option value="A200/J HR Office">A200/J HR Office</option>
+          <option value="A200/K Curriculum Coordinator Office">A200/K Curriculum Coordinator Office</option>
+          <option value="A201 IT Room">A201 IT Room</option>
+          <option value="A202 Classroom">A202 Classroom</option>
+          <option value="A203 Computer Room">A203 Computer Room</option>
+          <option value="A203-1 Classroom">A203-1 Classroom</option>
+          <option value="A203-2 Classroom">A203-2 Classroom</option>
+          <option value="A204 Classroom">A204 Classroom</option>
+          <option value="A205 Classroom">A205 Classroom</option>
+          <option value="A206 Classroom">A206 Classroom</option>
+          <option value="A207 Classroom">A207 Classroom</option>
+          <option value="A208 Classroom">A208 Classroom</option>
+          <option value="A2 Language Room">A2 Language Room</option>
+          <option value="A2 Male Toilet">A2 Male Toilet</option>
+          <option value="A2 Female Toilet">A2 Female Toilet</option>
+          <option value="A200 Management Toilet">A200 Management Toilet</option>
+          <option value="A300 Multi-Purpose Room">A300 Multi-Purpose Room</option>
+          <option value="A301 Multi-Purpose Room">A301 Multi-Purpose Room</option>
+          <option value="A302 Examination Director Office">A302 Examination Director Office</option>
+          <option value="A302/A Examination Manager Office">A302/A Examination Manager Office</option>
+          <option value="A303 Classroom">A303 Classroom</option>
+          <option value="A304 Classroom">A304 Classroom</option>
+          <option value="A305 Classroom">A305 Classroom</option>
+          <option value="A306 Classroom">A306 Classroom</option>
+          <option value="A307 Classroom">A307 Classroom</option>
+          <option value="A308 Classroom">A308 Classroom</option>
+          <option value="A309 Classroom">A309 Classroom</option>
+          <option value="A310 Classroom">A310 Classroom</option>
+          <option value="A311 Classroom">A311 Classroom</option>
+          <option value="A3 Kinder Teachers Room">A3 Kinder Teachers Room</option>
+          <option value="A3 Male Toilet">A3 Male Toilet</option>
+          <option value="A3 Female Toilet">A3 Female Toilet</option>
+          <option value="A400 Library">A400 Library</option>
+          <option value="A401 Physics Lab">A401 Physics Lab</option>
+          <option value="A402 General Lab">A402 General Lab</option>
+          <option value="A403 Chemistry Lab">A403 Chemistry Lab</option>
+          <option value="A404 Biology Lab">A404 Biology Lab</option>
+          <option value="A405 Preperation Room">A405 Preperation Room</option>
+          <option value="A4 Male Toilet">A4 Male Toilet</option>
+          <option value="A4 Female Toilet">A4 Female Toilet</option>
+          <option value="A500 Drama Room">A500 Drama Room</option>
+          <option value="A501 ICT Lab">A501 ICT Lab</option>
+          <option value="A5 Library Mezzanine">A5 Library Mezzanine</option>
+          <option value="A503 Discipline Office">A503 Discipline Office</option>
+          <option value="A505 JC Lounge">A505 JC Lounge</option>
+          <option value="A507 ICT Teacher Office">A507 ICT Teacher Office</option>
+          <option value="A5 Male Toilet">A5 Male Toilet</option>
+          <option value="A5 Female Toilet">A5 Female Toilet</option>
+          <option value="A5 Auditorium Stage">A5 Auditorium Stage</option>
+          <option value="A5 Auditorium Backstage">A5 Auditorium Backstage</option>
+          <option value="A5 Auditorium Control Room">A5 Auditorium Control Room</option>
+          <option value="B100 Indoor Playground">B100 Indoor Playground</option>
+          <option value="B1 Kindergarten Pool Area">B1 Kindergarten Pool Area</option>
+          <option value="B102 Classroom">B102 Classroom</option>
+          <option value="B1 Courtyard">B1 Courtyard</option>
+          <option value="B104 PE Stock Room">B104 PE Stock Room</option>
+          <option value="B1 Pool Maintenance Room 1">B1 Pool Maintenance Room 1</option>
+          <option value="B1 Pool Maintenance Room 2">B1 Pool Maintenance Room 2</option>
+          <option value="B1 Gymnasium">B1 Gymnasium</option>
+          <option value="B1 Pool Area">B1 Pool Area</option>
+          <option value="B1 Male Shower Room">B1 Male Shower Room</option>
+          <option value="B1 Female Shower Room">B1 Female Shower Room</option>
+          <option value="B1 Locker Area">B1 Locker Area</option>
+          <option value="B2 Kindergarten Canteen">B2 Kindergarten Canteen</option>
+          <option value="B2 Teachers Lounge">B2 Teachers Lounge</option>
+          <option value="B2 Canteen">B2 Canteen</option>
+          <option value="B2 Pantry Area">B2 Pantry Area</option>
+          <option value="B301 Art Room">B301 Art Room</option>
+          <option value="B302 Classroom">B302 Classroom</option>
+          <option value="B303 Classroom">B303 Classroom</option>
+          <option value="B304 Classroom">B304 Classroom</option>
+          <option value="B305 Classroom">B305 Classroom</option>
+          <option value="B306 Classroom">B306 Classroom</option>
+          <option value="B307 Classroom">B307 Classroom</option>
+          <option value="B308 Classroom">B308 Classroom</option>
+          <option value="B3 Male Toilet">B3 Male Toilet</option>
+          <option value="B3 Female Toilet">B3 Female Toilet</option>
+          <option value="B401 Art Room">B401 Art Room</option>
+          <option value="B402 Classroom">B402 Classroom</option>
+          <option value="B403 Classroom">B403 Classroom</option>
+          <option value="B404 Primary Lab">B404 Primary Lab</option>
+          <option value="B405 Classroom">B405 Classroom</option>
+          <option value="B406 Music Room">B406 Music Room</option>
+          <option value="B407 JC Art Room">B407 JC Art Room</option>
+          <option value="B501 Thai Music">B501 Thai Music</option>
+          <option value="B5 Kitchen">B5 Kitchen</option>
+          <option value="B5 Outdoor Terrace">B5 Outdoor Terrace</option>
+          <option value="C101 Under The Sea">C101 Under The Sea</option>
+          <option value="C102 Secret Garden Room">C102 Secret Garden Room</option>
+          <option value="C103 Supermarket Room">C103 Supermarket Room</option>
+          <option value="C104 Tree House">C104 Tree House</option>
+          <option value="C105 Safari">C105 Safari</option>
+          <option value="C106 China Pavillion">C106 China Pavillion</option>
+          <option value="C107 Golden Temple">C107 Golden Temple</option>
+          <option value="C108 I.L Room">C108 I.L Room</option>
+          <option value="C109 A Space Room">C109 A Space Room</option>
+          <option value="C109 B Classroom">C109 B Classroom</option>
+          <option value="C110 Kindergarten Library">C110 Kindergarten Library</option>
+          <option value="C111 Green House">C111 Green House</option>
+          <option value="C1 Kindergarten Playground Area">C1 Kindergarten Playground Area</option>
+          <option value="C1 Male Toilet (Safari)">C1 Male Toilet (Safari)</option>
+          <option value="C1 Female Toilet (Safari)">C1 Female Toilet (Safari)</option>
+          <option value="C1 Male Toilet (Playground)">C1 Male Toilet (Playground)</option>
+          <option value="C1 Female Toilet (Playground)">C1 Female Toilet (Playground)</option>
+          <option value="C201 Winter Room">C201 Winter Room</option>
+          <option value="C202 Golden Temple">C202 Golden Temple</option>
+          <option value="C203 China Pavilion">C203 China Pavilion</option>
+          <option value="C204 Bird''s Nest">C204 Bird''s Nest</option>
+          <option value="C205 Classroom">C205 Classroom</option>
+          <option value="C2 Male Toilet">C2 Male Toilet</option>
+          <option value="C2 Female Toilet">C2 Female Toilet</option>
+          <option value="D100 Storage Room">D100 Storage Room</option>
+          <option value="D101 Male Toilet">D101 Male Toilet</option>
+          <option value="D102 Female Toilet">D102 Female Toilet</option>
+          <option value="D103 Gym Control Room">D103 Gym Control Room</option>
+          <option value="D2 Male Toilet">D2 Male Toilet</option>
+          <option value="D201 Classroom">D201 Classroom</option>
+          <option value="D202 Classroom">D202 Classroom</option>
+          <option value="D203 Classroom">D203 Classroom</option>
+          <option value="D204 ACS Room">D204 ACS Room</option>
+          <option value="D205 Counselor Room">D205 Counselor Room</option>
+          <option value="D300 Teachers Room">D300 Teachers Room</option>
+          <option value="D301 Path ways Room">D301 Path ways Room</option>
+          <option value="D3 Female Toilet">D3 Female Toilet</option>
+          <option value="D400 Teachers Room">D400 Teachers Room</option>
+          <option value="D401 Mezzanine Room">D401 Mezzanine Room</option>
+          <option value="E100 Classroom">E100 Classroom</option>
+          <option value="E101 Stockroom">E101 Stockroom</option>
+          <option value="E102 Classroom">E102 Classroom</option>
+          <option value="E103 RTT Room">E103 RTT Room</option>
+          <option value="E104 Stockroom">E104 Stockroom</option>
+          <option value="E1 Male and Female Toilet">E1 Male and Female Toilet</option>
+          <option value="E200 Chinese Teachers Room">E200 Chinese Teachers Room</option>
+          <option value="E201 PE Teachers Room">E201 PE Teachers Room</option>
+          <option value="E2 Stock Room">E2 Stock Room</option>
+          <option value="A1 Carpark">A1 Carpark</option>
+          <option value="Others">Others</option>
+        </select>
+      </div>
+      
+      <!-- alt location -->
+      <div class="form-group">
+        <label>If location is not in the list please write it here (หากตำแหน่งไม่อยู่ในรายการโปรดเขียนที่นี่):</label>
+        <input type="text" id="altLocation">
+      </div>
+      
+      <!-- type -->
+      <div class="form-group">
+        <label>Type (ประเภท): <span class="required">*</span></label>
+        <div class="radio-group">
+          <label class="radio-label"><input type="radio" name="type" value="Air Conditioner / เครื่องปรับอากาศ" required> Air Conditioner / เครื่องปรับอากาศ</label>
+          <label class="radio-label"><input type="radio" name="type" value="Electrical System / ระบบไฟฟ้า"> Electrical System / ระบบไฟฟ้า</label>
+          <label class="radio-label"><input type="radio" name="type" value="Sanitary / สุขาภิบาล"> Sanitary / สุขาภิบาล</label>
+          <label class="radio-label"><input type="radio" name="type" value="Furniture / เฟอร์นิเจอร์"> Furniture / เฟอร์นิเจอร์</label>
+          <label class="radio-label"><input type="radio" name="type" value="Fixtures / ติดตั้ง"> Fixtures / ติดตั้ง</label>
+          <label class="radio-label"><input type="radio" name="type" value="Plumbing / ประปา"> Plumbing / ประปา</label>
+          <label class="radio-label"><input type="radio" name="type" value="Swimming Pool / สระว่ายน้ำ"> Swimming Pool / สระว่ายน้ำ</label>
+          <label class="radio-label"><input type="radio" name="type" value="Building / Construction / การก่อสร้างอาคาร"> Building / Construction / การก่อสร้างอาคาร</label>
+          <label class="radio-label"><input type="radio" name="type" value="Other"> Other</label>
+        </div>
+      </div>
+      
+      <!-- priority -->
+      <div class="form-group">
+        <label>Priority Level (ระดับความสำคัญ): <span class="required">*</span></label>
+        <div class="radio-group">
+          <label class="radio-label"><input type="radio" name="priority" value="Normal (ระดับปกติ)" required> Normal (ระดับปกติ)</label>
+          <label class="radio-label"><input type="radio" name="priority" value="High / Urgent (เร่งด่วน)"> High / Urgent (เร่งด่วน)</label>
+        </div>
+      </div>
+      
+      <!-- details -->
+      <div class="form-group">
+        <label>Please specify details (กรุณาระบุรายละเอียด): <span class="required">*</span></label>
+        <textarea id="details" required></textarea>
+      </div>
+      
+      <!-- image -->
+      <div class="form-group">
+        <label>Upload image (อัปโหลดรูปภาพ (ถ้าจำเป็น)):</label>
+        <div class="file-drop" onclick="document.getElementById('fileInput').click()">
+          📁 Drag & drop a file or <span style="text-decoration: underline;">browse</span>
+          <br><small id="fileNameDisplay" style="color: #3b82f6;"></small>
+        </div>
+        <input type="file" id="fileInput" style="display: none;" onchange="handleFile(this)">
+      </div>
+      
+      <button type="submit" id="submitBtn">Submit Report</button>
+      <div class="loading" id="loadingMsg">Submitting request... please wait.</div>
+    </form>
+  </div>
+  
+  <script>
+    let fileData = null;
+    let fileName = null;
+    let fileMimeType = null;
+
+    function handleFile(input) {
+      const file = input.files[0];
+      if (!file) return;
+      document.getElementById('fileNameDisplay').innerText = file.name;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        fileData = e.target.result;
+        fileName = file.name;
+        fileMimeType = file.type;
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    function submitForm(e) {
+      e.preventDefault();
+      
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('loadingMsg').style.display = 'block';
+      
+      const data = {
+        email: document.getElementById('email').value,
+        staffName: document.getElementById('staffName').value,
+        location: document.getElementById('location').value,
+        altLocation: document.getElementById('altLocation').value,
+        type: document.querySelector('input[name="type"]:checked').value,
+        priority: document.querySelector('input[name="priority"]:checked').value,
+        details: document.getElementById('details').value,
+        fileData: fileData,
+        fileName: fileName,
+        fileMimeType: fileMimeType
+      };
+      
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (res.success) {
+            document.body.innerHTML = `
+              <div class="container" style="text-align:center;">
+                <h2 style="color: #166534;">Thank You!</h2>
+                <p>Your maintenance request has been submitted successfully.</p>
+                <p>Request ID: <b>${res.submissionId}</b></p>
+                <button onclick="window.location.reload()" style="margin-top: 20px; width: auto;">Submit Another Report</button>
+              </div>
+            `;
+          } else {
+            alert('Error: ' + res.error);
+            resetBtn();
+          }
+        })
+        .withFailureHandler(function(err) {
+          alert('Failed to submit: ' + err);
+          resetBtn();
+        })
+        .processForm(data);
+    }
+    
+    function resetBtn() {
+      document.getElementById('submitBtn').disabled = false;
+      document.getElementById('loadingMsg').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
