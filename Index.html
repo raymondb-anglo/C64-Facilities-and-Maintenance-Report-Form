@@ -1,119 +1,229 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <base target="_top">
   <meta charset="UTF-8">
   <style>
-    body { 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-      background-color: #f0f2f5; 
-      margin: 0; 
-      padding: 20px; 
-      color: #333; 
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      color: #333;
     }
-    .container { 
-      max-width: 600px; 
-      margin: 0 auto; 
-      background: white; 
-      padding: 30px; 
-      border-radius: 8px; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-    .header-banner { 
-      background: linear-gradient(135deg, #5b7fff 0%, #1700b3 100%); 
-      height: 110px; 
-      border-radius: 8px 8px 0 0; 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      color: white; 
-      margin: -30px -30px 30px -30px; 
+
+    .header-banner {
+      background: linear-gradient(135deg, #5b7fff 0%, #1700b3 100%);
+      height: 110px;
+      border-radius: 8px 8px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+      margin: -30px -30px 30px -30px;
       padding: 0 30px;
     }
-    .header-left { display: flex; align-items: center; gap: 15px; }
-    .header-icon { font-size: 45px; }
-    .header-title { font-size: 28px; font-weight: 800; line-height: 1.1; }
-    .header-logo { width: 70px; height: 70px; border-radius: 50%; background: white; padding: 2px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-    h1 { display: none; }
-    p.subtitle { margin-top: -10px; }
-    h1 { text-align: center; font-size: 24px; color: #1e3a8a; margin-bottom: 5px; }
-    p.subtitle { text-align: center; color: #6b7280; font-size: 14px; margin-bottom: 30px; }
-    .form-group { margin-bottom: 20px; }
-    label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
-    .required { color: #ef4444; }
-    input[type="text"], input[type="email"], select, textarea {
-      width: 100%; 
-      padding: 10px; 
-      border: 1px solid #d1d5db; 
-      border-radius: 4px; 
-      box-sizing: border-box; 
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-icon {
+      font-size: 45px;
+    }
+
+    .header-title {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .header-logo {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: white;
+      padding: 2px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      display: none;
+    }
+
+    p.subtitle {
+      margin-top: -10px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      color: #1e3a8a;
+      margin-bottom: 5px;
+    }
+
+    p.subtitle {
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .required {
+      color: #ef4444;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      box-sizing: border-box;
       font-family: inherit;
     }
-    input[type="text"]:focus, input[type="email"]:focus, select:focus, textarea:focus {
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    select:focus,
+    textarea:focus {
       outline: none;
       border-color: #3b82f6;
       box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
     }
-    textarea { height: 100px; resize: vertical; }
-    .radio-group { display: flex; flex-direction: column; gap: 8px; }
-    .radio-label { display: flex; align-items: center; font-weight: normal; font-size: 14px; cursor: pointer; }
-    .radio-label input { margin-right: 8px; width: 16px; height: 16px; accent-color: #3b82f6; }
-    .file-drop { 
-      border: 2px dashed #d1d5db; 
-      border-radius: 4px; 
-      padding: 30px; 
-      text-align: center; 
-      color: #6b7280; 
-      cursor: pointer; 
+
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      font-weight: normal;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .radio-label input {
+      margin-right: 8px;
+      width: 16px;
+      height: 16px;
+      accent-color: #3b82f6;
+    }
+
+    .file-drop {
+      border: 2px dashed #d1d5db;
+      border-radius: 4px;
+      padding: 30px;
+      text-align: center;
+      color: #6b7280;
+      cursor: pointer;
       transition: all 0.2s;
     }
-    .file-drop:hover { background-color: #f9fafb; border-color: #9ca3af; }
-    button { 
-      background-color: #3b82f6; 
-      color: white; 
-      border: none; 
-      padding: 14px 24px; 
-      font-size: 16px; 
-      font-weight: 600; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      width: 100%; 
-      transition: background-color 0.2s; 
+
+    .file-drop:hover {
+      background-color: #f9fafb;
+      border-color: #9ca3af;
     }
-    button:hover { background-color: #2563eb; }
-    button:disabled { background-color: #9ca3af; cursor: not-allowed; }
-    .loading { display: none; text-align: center; margin-top: 15px; color: #6b7280; font-weight: 600; }
+
+    button {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #2563eb;
+    }
+
+    button:disabled {
+      background-color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 15px;
+      color: #6b7280;
+      font-weight: 600;
+    }
   </style>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Tom Select for Searchable Dropdown -->
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.default.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 </head>
+
 <body>
   <div class="container">
-    <div class="header-banner">
-      <div class="header-left">
-        <div class="header-icon">🛠️</div>
-        <div class="header-title">MAINTENANCE<br>REPORT FORM</div>
-      </div>
-      <img src="https://anglosingapore.ac.th/wp-content/uploads/2021/04/Anglo-logo.png" class="header-logo" alt="Logo" onerror="this.style.display='none'">
+    <!-- Header Image -->
+    <div style="text-align: center; margin-bottom: 20px; margin-top: -10px;">
+      <!-- UPDATE THIS SRC WITH YOUR IMAGE URL FROM GOOGLE DRIVE -->
+      <img src="https://i.postimg.cc/CKtdTPG0/Maintenance-form.png"
+        id="headerImage" alt="Maintenance Report Form"
+        style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
     </div>
     <p class="subtitle">C64 แบบฟอร์มรายงานสิ่งอำนวยความสะดวกและการบำรุงรักษา</p>
-    
+
     <form id="maintenanceForm" onsubmit="submitForm(event)">
       <!-- email -->
       <div class="form-group">
         <label>Email Address (อีเมล): <span class="required">*</span></label>
         <input type="email" id="email" required placeholder="youremail@anglosingapore.ac.th">
       </div>
-      
+
       <!-- staff name -->
       <div class="form-group">
         <label>Staff Name (ชื่อพนักงาน): <span class="required">*</span></label>
         <input type="text" id="staffName" required>
       </div>
-      
+
       <!-- location -->
       <div class="form-group">
         <label>Location (สถานที่): <span class="required">*</span></label>
         <select id="location" required>
-<option value="">Select a location...</option>
+          <option value="">Select a location...</option>
           <option value="A102 Classroom">A102 Classroom</option>
           <option value="A104 Classroom">A104 Classroom</option>
           <option value="A105 Classroom">A105 Classroom</option>
@@ -282,44 +392,53 @@
           <option value="Others">Others</option>
         </select>
       </div>
-      
+
       <!-- alt location -->
       <div class="form-group">
         <label>If location is not in the list please write it here (หากตำแหน่งไม่อยู่ในรายการโปรดเขียนที่นี่):</label>
         <input type="text" id="altLocation">
       </div>
-      
+
       <!-- type -->
       <div class="form-group">
         <label>Type (ประเภท): <span class="required">*</span></label>
         <div class="radio-group">
-          <label class="radio-label"><input type="radio" name="type" value="Air Conditioner / เครื่องปรับอากาศ" required> Air Conditioner / เครื่องปรับอากาศ</label>
-          <label class="radio-label"><input type="radio" name="type" value="Electrical System / ระบบไฟฟ้า"> Electrical System / ระบบไฟฟ้า</label>
-          <label class="radio-label"><input type="radio" name="type" value="Sanitary / สุขาภิบาล"> Sanitary / สุขาภิบาล</label>
-          <label class="radio-label"><input type="radio" name="type" value="Furniture / เฟอร์นิเจอร์"> Furniture / เฟอร์นิเจอร์</label>
-          <label class="radio-label"><input type="radio" name="type" value="Fixtures / ติดตั้ง"> Fixtures / ติดตั้ง</label>
+          <label class="radio-label"><input type="radio" name="type" value="Air Conditioner / เครื่องปรับอากาศ"
+              required> Air Conditioner / เครื่องปรับอากาศ</label>
+          <label class="radio-label"><input type="radio" name="type" value="Electrical System / ระบบไฟฟ้า"> Electrical
+            System / ระบบไฟฟ้า</label>
+          <label class="radio-label"><input type="radio" name="type" value="Sanitary / สุขาภิบาล"> Sanitary /
+            สุขาภิบาล</label>
+          <label class="radio-label"><input type="radio" name="type" value="Furniture / เฟอร์นิเจอร์"> Furniture /
+            เฟอร์นิเจอร์</label>
+          <label class="radio-label"><input type="radio" name="type" value="Fixtures / ติดตั้ง"> Fixtures /
+            ติดตั้ง</label>
           <label class="radio-label"><input type="radio" name="type" value="Plumbing / ประปา"> Plumbing / ประปา</label>
-          <label class="radio-label"><input type="radio" name="type" value="Swimming Pool / สระว่ายน้ำ"> Swimming Pool / สระว่ายน้ำ</label>
-          <label class="radio-label"><input type="radio" name="type" value="Building / Construction / การก่อสร้างอาคาร"> Building / Construction / การก่อสร้างอาคาร</label>
+          <label class="radio-label"><input type="radio" name="type" value="Swimming Pool / สระว่ายน้ำ"> Swimming Pool /
+            สระว่ายน้ำ</label>
+          <label class="radio-label"><input type="radio" name="type" value="Building / Construction / การก่อสร้างอาคาร">
+            Building / Construction / การก่อสร้างอาคาร</label>
           <label class="radio-label"><input type="radio" name="type" value="Other"> Other</label>
         </div>
       </div>
-      
+
       <!-- priority -->
       <div class="form-group">
         <label>Priority Level (ระดับความสำคัญ): <span class="required">*</span></label>
         <div class="radio-group">
-          <label class="radio-label"><input type="radio" name="priority" value="Normal (ระดับปกติ)" required> Normal (ระดับปกติ)</label>
-          <label class="radio-label"><input type="radio" name="priority" value="High / Urgent (เร่งด่วน)"> High / Urgent (เร่งด่วน)</label>
+          <label class="radio-label"><input type="radio" name="priority" value="Normal (ระดับปกติ)" required> Normal
+            (ระดับปกติ)</label>
+          <label class="radio-label"><input type="radio" name="priority" value="High / Urgent (เร่งด่วน)"> High / Urgent
+            (เร่งด่วน)</label>
         </div>
       </div>
-      
+
       <!-- details -->
       <div class="form-group">
         <label>Please specify details (กรุณาระบุรายละเอียด): <span class="required">*</span></label>
         <textarea id="details" required></textarea>
       </div>
-      
+
       <!-- image -->
       <div class="form-group">
         <label>Upload image (อัปโหลดรูปภาพ (ถ้าจำเป็น)):</label>
@@ -329,12 +448,12 @@
         </div>
         <input type="file" id="fileInput" style="display: none;" onchange="handleFile(this)">
       </div>
-      
+
       <button type="submit" id="submitBtn">Submit Report</button>
       <div class="loading" id="loadingMsg">Submitting request... please wait.</div>
     </form>
   </div>
-  
+
   <script>
     let fileData = null;
     let fileName = null;
@@ -344,22 +463,22 @@
       const file = input.files[0];
       if (!file) return;
       document.getElementById('fileNameDisplay').innerText = file.name;
-      
+
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         fileData = e.target.result;
         fileName = file.name;
         fileMimeType = file.type;
       };
       reader.readAsDataURL(file);
     }
-    
+
     function submitForm(e) {
       e.preventDefault();
-      
+
       document.getElementById('submitBtn').disabled = true;
       document.getElementById('loadingMsg').style.display = 'block';
-      
+
       const data = {
         email: document.getElementById('email').value,
         staffName: document.getElementById('staffName').value,
@@ -372,34 +491,57 @@
         fileName: fileName,
         fileMimeType: fileMimeType
       };
-      
+
       google.script.run
-        .withSuccessHandler(function(res) {
+        .withSuccessHandler(function (res) {
           if (res.success) {
-            document.body.innerHTML = `
-              <div class="container" style="text-align:center;">
-                <h2 style="color: #166534;">Thank You!</h2>
-                <p>Your maintenance request has been submitted successfully.</p>
-                <p>Request ID: <b>${res.submissionId}</b></p>
-                <button onclick="window.location.reload()" style="margin-top: 20px; width: auto;">Submit Another Report</button>
-              </div>
-            `;
+            Swal.fire({
+              title: 'Success!',
+              html: `Your maintenance request has been submitted successfully.<br><br>Request ID: <b>${res.submissionId}</b>`,
+              icon: 'success',
+              confirmButtonText: 'Submit Another Report',
+              confirmButtonColor: '#3b82f6',
+              allowOutsideClick: false
+            }).then(() => {
+              document.getElementById('maintenanceForm').reset();
+              if (window.tomSelectInstance) {
+                window.tomSelectInstance.clear();
+              }
+              document.getElementById('fileNameDisplay').textContent = '';
+              fileData = null;
+              fileName = null;
+              fileMimeType = null;
+              resetBtn();
+            });
           } else {
-            alert('Error: ' + res.error);
+            Swal.fire('Error', res.error, 'error');
             resetBtn();
           }
         })
-        .withFailureHandler(function(err) {
-          alert('Failed to submit: ' + err);
+        .withFailureHandler(function (err) {
+          Swal.fire('Submission Failed', err.toString(), 'error');
           resetBtn();
         })
         .processForm(data);
     }
-    
+
     function resetBtn() {
       document.getElementById('submitBtn').disabled = false;
       document.getElementById('loadingMsg').style.display = 'none';
     }
+
+    // Initialize Tom Select for searchable location dropdown
+    window.addEventListener('DOMContentLoaded', () => {
+      window.tomSelectInstance = new TomSelect("#location", {
+        create: false,
+        sortField: {
+          field: "text",
+          direction: "asc"
+        },
+        placeholder: "Select or type to search..."
+      });
+    });
   </script>
 </body>
+
 </html>

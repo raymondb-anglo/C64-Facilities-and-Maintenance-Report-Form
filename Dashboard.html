@@ -1,91 +1,265 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <base target="_top">
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
   <style>
-    body { 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-      background-color: #f0f2f5; 
-      margin: 0; 
-      padding: 20px; 
-      color: #333; 
+    body {
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7f6;
+      margin: 0;
+      padding: 20px;
+      color: #333;
     }
-    .container { 
-      max-width: 98%; 
-      margin: 0 auto; 
-      background: white; 
-      padding: 30px; 
-      border-radius: 8px; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+
+    .container {
+      max-width: 98%;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
     }
+
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       padding-bottom: 20px;
+      border-bottom: 2px solid #f0f2f5;
+    }
+
+    h1 {
+      color: #1e3a8a;
+      margin: 0;
+      font-weight: 800;
+      font-size: 26px;
+    }
+
+    /* Modern DataTable Customizations */
+    .dataTables_wrapper .dataTables_filter input {
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 6px 12px;
+      margin-left: 8px;
+      outline: none;
+    }
+
+    .dataTables_wrapper .dataTables_filter input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .dataTables_wrapper .dataTables_length select {
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 4px;
+      outline: none;
+    }
+
+    table.dataTable.no-footer {
       border-bottom: 1px solid #e5e7eb;
+      margin-top: 15px !important;
+      margin-bottom: 15px !important;
     }
-    h1 { color: #1e3a8a; margin: 0; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
-    th { background-color: #f9fafb; font-weight: 600; color: #4b5563; }
-    tr:hover { background-color: #f9fafb; }
-    .status-select { 
-      padding: 8px; 
-      border-radius: 4px; 
-      border: 1px solid #d1d5db; 
-      font-weight: 600; 
+
+    table.dataTable thead th,
+    table.dataTable thead td {
+      border-bottom: 2px solid #e5e7eb;
+      background-color: #f9fafb;
+      color: #4b5563;
+      font-weight: 600;
+      padding: 12px 16px;
+    }
+
+    table.dataTable tbody tr {
+      background-color: white;
+      transition: background-color 0.2s ease;
+    }
+
+    table.dataTable tbody tr:hover {
+      background-color: #f8fafc;
+    }
+
+    table.dataTable tbody th,
+    table.dataTable tbody td {
+      padding: 14px 16px;
+      vertical-align: top;
+      border-bottom: 1px solid #f0f2f5;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+      border-radius: 6px;
+      padding: 5px 12px;
+      margin-left: 5px;
+      border: 1px solid transparent;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+      background: #3b82f6;
+      color: white !important;
+      border: 1px solid #3b82f6;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+      background: #e5e7eb;
+      color: #333 !important;
+      border: 1px solid #d1d5db;
+    }
+
+    .status-select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      font-weight: 600;
       cursor: pointer;
-      width: 130px;
+      width: 140px;
+      transition: all 0.2s;
     }
+
     .status-select:focus {
       outline: none;
       border-color: #3b82f6;
     }
-    .badge { 
-      padding: 4px 8px; 
-      border-radius: 999px; 
-      font-size: 12px; 
-      font-weight: 600; 
-      display: inline-block;
-      margin-bottom: 8px;
+
+    .status-select:disabled {
+      background-color: #f3f4f6;
+      cursor: not-allowed;
+      color: #9ca3af;
     }
-    .badge-Action { background: #fef3c7; color: #92400e; }
-    .badge-Pending { background: #e0e7ff; color: #3730a3; }
-    .badge-Ongoing { background: #dbeafe; color: #1e40af; }
-    .badge-Closed { background: #dcfce3; color: #166534; }
-    .refresh-btn {
-      background-color: white;
+
+    .badge {
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-block;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-Action {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-Pending {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge-Ongoing {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge-Closed {
+      background: #dcfce3;
+      color: #166534;
+    }
+
+    .remarks-box {
+      width: 100%;
+      height: 60px;
+      resize: vertical;
+      padding: 6px;
       border: 1px solid #d1d5db;
-      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    .remarks-box:disabled {
+      background-color: #f3f4f6;
+    }
+
+    .save-remarks-btn {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 4px 10px;
       border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 4px;
+      float: right;
+    }
+
+    .save-remarks-btn:hover {
+      background-color: #2563eb;
+    }
+
+    .save-remarks-btn:disabled {
+      background-color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .refresh-btn {
+      background-color: #ffffff;
+      border: 1px solid #d1d5db;
+      padding: 10px 18px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
+      color: #374151;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
-    .refresh-btn:hover { background-color: #f3f4f6; }
-    .loading-spinner { text-align: center; padding: 40px; color: #6b7280; }
-    a { color: #3b82f6; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+
+    .refresh-btn:hover {
+      background-color: #f9fafb;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .loading-spinner {
+      text-align: center;
+      padding: 60px;
+      color: #6b7280;
+    }
+
+    a {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a:hover {
+      text-decoration: underline;
+      color: #2563eb;
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div class="header">
       <div>
-        <h1>Officer Dashboard</h1>
-        <p style="color: #6b7280; margin: 5px 0 0 0;">Manage C64 Facilities and Maintenance Requests</p>
+        <h1>Dashboard</h1>
+        <p style="color: #6b7280; margin: 8px 0 0 0; font-size: 15px;">Manage C64 Facilities and Maintenance Requests
+        </p>
       </div>
-      <button class="refresh-btn" onclick="loadData()">↻ Refresh List</button>
+      <button class="refresh-btn" onclick="loadData()">
+        ↻ Refresh List
+      </button>
     </div>
-    
+
     <div id="loading" class="loading-spinner">
       <h2>Loading submissions...</h2>
       <p>Fetching the latest data from your Google Sheet.</p>
     </div>
-    
-    <table id="submissionsTable" style="display:none;">
+
+    <table id="submissionsTable" class="display responsive nowrap" style="width:100%; display:none;">
       <thead>
         <tr>
           <th>ID & Time</th>
@@ -93,55 +267,75 @@
           <th>Location & Category</th>
           <th>Details</th>
           <th>Attachment</th>
-          <th style="min-width: 150px;">Action / Status</th>
+          <th style="min-width: 200px;">Remarks</th>
+          <th>Action / Status</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
     </table>
   </div>
-  
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script>
     function getBadgeClass(status) {
-      if(status.includes('Action')) return 'badge-Action';
-      if(status.includes('Pending')) return 'badge-Pending';
-      if(status.includes('Ongoing')) return 'badge-Ongoing';
-      if(status.includes('Closed')) return 'badge-Closed';
+      if (status.includes('Action')) return 'badge-Action';
+      if (status.includes('Under Review')) return 'badge-Pending';
+      if (status.includes('In Progress')) return 'badge-Ongoing';
+      if (status.includes('Completed')) return 'badge-Closed';
       return 'badge-Pending';
     }
 
     function loadData() {
+      // Hide table, show loading
+      if ($.fn.DataTable.isDataTable('#submissionsTable')) {
+        $('#submissionsTable').DataTable().destroy();
+      }
       document.getElementById('submissionsTable').style.display = 'none';
+      document.getElementById('tableBody').innerHTML = '';
       document.getElementById('loading').style.display = 'block';
-      
+
       google.script.run
         .withSuccessHandler(renderTable)
-        .withFailureHandler(function(err) {
-          alert("Failed to load submissions: " + err);
+        .withFailureHandler(function (err) {
+          Swal.fire('Error', 'Failed to load submissions: ' + err, 'error');
           document.getElementById('loading').innerHTML = "Failed to load.";
         })
         .getSubmissions();
     }
-    
+
     function renderTable(submissions) {
       document.getElementById('loading').style.display = 'none';
       const tbody = document.getElementById('tableBody');
       document.getElementById('submissionsTable').style.display = 'table';
-      
+
       let html = '';
-      
-      if (submissions.length === 0) {
-        html = '<tr><td colspan="6" style="text-align:center; padding: 30px;">No submissions found.</td></tr>';
-      } else {
+
+      if (submissions.length > 0) {
         submissions.forEach(sub => {
           let fileLink = sub.fileUrl ? `<a href="${sub.fileUrl}" target="_blank">View File</a>` : '<span style="color:#9ca3af;">None</span>';
+          
+          // Use the exact time string from the spreadsheet to ensure 100% sync
+          let dateStr = sub.time; 
           let dateObj = new Date(sub.time);
-          let dateStr = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-          
+          let sortTime = isNaN(dateObj.getTime()) ? 0 : dateObj.getTime();
+
           let badgeClass = getBadgeClass(sub.status);
-          
+
+          // Disable dropdown and remarks if status is Completed
+          let disabledAttr = sub.status === 'Completed' ? 'disabled' : '';
+
+          // DataTables uses data-sort or data-order for sorting complex HTML columns.
+
           html += `
             <tr>
-              <td>
+              <td data-order="${sortTime}">
                 <strong>${sub.submissionId}</strong><br>
                 <small style="color: #6b7280;">${dateStr}</small>
               </td>
@@ -154,17 +348,21 @@
                 <span style="color: #6b7280; font-size: 13px;">${sub.type}</span><br>
                 <span style="color: #ef4444; font-size: 12px; font-weight: 600;">${sub.priority}</span>
               </td>
-              <td style="max-width: 300px;">
+              <td style="max-width: 300px; white-space: normal;">
                 ${sub.details}
               </td>
               <td>${fileLink}</td>
               <td>
+                <textarea id="remarks_${sub.rowIndex}" class="remarks-box" ${disabledAttr} placeholder="Optional notes...">${sub.remarks}</textarea>
+                <button class="save-remarks-btn" onclick="saveRemarks(${sub.rowIndex}, this)" ${disabledAttr}>Save</button>
+              </td>
+              <td data-search="${sub.status}">
                 <span class="badge ${badgeClass}">${sub.status}</span><br>
-                <select class="status-select" onchange="updateStatus(${sub.rowIndex}, this)">
+                <select class="status-select" onchange="updateStatus(${sub.rowIndex}, this)" ${disabledAttr}>
                   <option value="" disabled selected>Change to...</option>
-                  <option value="Pending">Pending</option>
-                  <option value="Ongoing">Ongoing</option>
-                  <option value="Closed">Closed</option>
+                  <option value="Under Review" ${sub.status === 'Under Review' ? 'disabled hidden' : ''}>Under Review</option>
+                  <option value="In Progress" ${sub.status === 'In Progress' ? 'disabled hidden' : ''}>In Progress</option>
+                  <option value="Completed" ${sub.status === 'Completed' ? 'disabled hidden' : ''}>Completed</option>
                 </select>
               </td>
             </tr>
@@ -172,43 +370,100 @@
         });
       }
       tbody.innerHTML = html;
+
+      // Initialize DataTables
+      $('#submissionsTable').DataTable({
+        responsive: true,
+        order: [[0, 'desc']],
+        pageLength: 10,
+        language: {
+          search: "Filter records:",
+          lengthMenu: "Show _MENU_ entries"
+        }
+      });
     }
-    
+
     function updateStatus(rowIndex, selectElement) {
       const newStatus = selectElement.value;
       if (!newStatus) return;
       
-      const confirmMsg = `Are you sure you want to change the status to "${newStatus}"?\n\nAn email will be sent to the requester automatically.`;
-      if (!confirm(confirmMsg)) {
-        selectElement.selectedIndex = 0;
-        return;
-      }
-      
-      selectElement.disabled = true;
-      const originalText = selectElement.options[selectElement.selectedIndex].text;
-      selectElement.options[selectElement.selectedIndex].text = 'Updating...';
-      
+      const remarks = document.getElementById('remarks_' + rowIndex).value;
+
+      Swal.fire({
+        title: 'Confirm Update',
+        text: `Change status to "${newStatus}"? An email will be sent automatically.`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3b82f6',
+        cancelButtonColor: '#9ca3af',
+        confirmButtonText: 'Yes, update it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          selectElement.disabled = true;
+          const originalText = selectElement.options[selectElement.selectedIndex].text;
+          selectElement.options[selectElement.selectedIndex].text = 'Updating...';
+
+          google.script.run
+            .withSuccessHandler((res) => {
+              if (res.success) {
+                Swal.fire({
+                  title: 'Updated!',
+                  text: 'The status has been updated successfully.',
+                  icon: 'success',
+                  timer: 1500,
+                  showConfirmButton: false
+                }).then(() => {
+                  loadData(); // reload table
+                });
+              } else {
+                Swal.fire('Error', 'Failed to update: ' + res.error, 'error');
+                selectElement.disabled = false;
+                selectElement.options[selectElement.selectedIndex].text = originalText;
+              }
+            })
+            .withFailureHandler((err) => {
+              Swal.fire('Error', 'Error connecting to server: ' + err, 'error');
+              selectElement.disabled = false;
+              selectElement.options[selectElement.selectedIndex].text = originalText;
+            })
+            .updateStatus(rowIndex, newStatus, remarks);
+        } else {
+          // Revert selection visually
+          selectElement.selectedIndex = 0;
+        }
+      });
+    }
+
+    function saveRemarks(rowIndex, btn) {
+      const remarks = document.getElementById('remarks_' + rowIndex).value;
+      btn.textContent = 'Saving...';
+      btn.disabled = true;
+
       google.script.run
         .withSuccessHandler((res) => {
-          if(res.success) {
-            // Reload table to show new state
-            loadData();
+          if (res.success) {
+            btn.textContent = 'Saved!';
+            setTimeout(() => {
+              btn.textContent = 'Save';
+              btn.disabled = false;
+            }, 2000);
           } else {
-            alert('Failed to update: ' + res.error);
-            selectElement.disabled = false;
-            selectElement.options[selectElement.selectedIndex].text = originalText;
+            Swal.fire('Error', 'Failed to save: ' + res.error, 'error');
+            btn.textContent = 'Save';
+            btn.disabled = false;
           }
         })
         .withFailureHandler((err) => {
-          alert('Error connecting to server: ' + err);
-          selectElement.disabled = false;
-          selectElement.options[selectElement.selectedIndex].text = originalText;
+          Swal.fire('Error', 'Error connecting to server: ' + err, 'error');
+          btn.textContent = 'Save';
+          btn.disabled = false;
         })
-        .updateStatus(rowIndex, newStatus);
+        .saveRemarks(rowIndex, remarks);
     }
-    
+
     // Load on start
     window.onload = loadData;
   </script>
 </body>
+
 </html>
