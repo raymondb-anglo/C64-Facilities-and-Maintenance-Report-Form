@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7f6;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    /* Navigation Bar */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+      padding: 14px 28px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-logo {
+      font-size: 22px;
+    }
+
+    .nav-title {
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 6px;
+    }
+
+    .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.25s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      text-decoration: none;
+    }
+
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 98%;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0f2f5;
+    }
+
+    h1 {
+      color: #1e3a8a;
+      margin: 0;
+      font-weight: 800;
+      font-size: 26px;
+    }
+
+    .loading-spinner {
+      text-align: center;
+      padding: 60px;
+      color: #6b7280;
+    }
+
+    /* Stat Cards */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px 24px;
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-card .stat-number {
+      font-size: 36px;
+      font-weight: 800;
+      color: #1e3a8a;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-card .stat-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-card.action .stat-number { color: #92400e; }
+    .stat-card.review .stat-number { color: #991b1b; }
+    .stat-card.progress .stat-number { color: #1e40af; }
+    .stat-card.completed .stat-number { color: #166534; }
+
+    /* Charts Grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    .chart-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .chart-card h3 {
+      color: #1e3a8a;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-height: 300px;
+    }
+
+    /* Export Table Section */
+    .export-section {
+      margin-top: 30px;
+    }
+
+    .export-section h2 {
+      color: #1e3a8a;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* DataTable Styling */
+    .dataTables_wrapper .dataTables_filter input {
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 6px 12px;
+      margin-left: 8px;
+      outline: none;
+    }
+
+    .dataTables_wrapper .dataTables_filter input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    table.dataTable thead th {
+      border-bottom: 2px solid #e5e7eb;
+      background-color: #f9fafb;
+      color: #4b5563;
+      font-weight: 600;
+      padding: 10px 14px;
+      font-size: 13px;
+    }
+
+    table.dataTable tbody td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #f0f2f5;
+      font-size: 13px;
+    }
+
+    table.dataTable tbody tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+      background: #3b82f6;
+      color: white !important;
+      border: 1px solid #3b82f6;
+      border-radius: 6px;
+    }
+
+    .dt-buttons .dt-button {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+      color: white !important;
+      border: none !important;
+      border-radius: 8px !important;
+      padding: 8px 18px !important;
+      font-weight: 600 !important;
+      font-size: 13px !important;
+      margin-right: 8px !important;
+      transition: all 0.2s !important;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    .dt-buttons .dt-button:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4) !important;
+    }
+
+    .refresh-btn {
+      background-color: #ffffff;
+      border: 1px solid #d1d5db;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #374151;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .refresh-btn:hover {
+      background-color: #f9fafb;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .top-nav {
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px 18px;
+      }
+
+      .nav-links {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="top-nav">
+    <div class="nav-brand">
+      <span class="nav-logo">🏢</span>
+      <span class="nav-title">C64 Facilities & Maintenance</span>
+    </div>
+    <div class="nav-links">
+      <a href="<?= ScriptApp.getService().getUrl() ?>?page=officer" class="nav-link">
+        📋 Task Board
+      </a>
+      <a href="<?= ScriptApp.getService().getUrl() ?>?page=analytics" class="nav-link active">
+        📊 Analytics & Reports
+      </a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>📊 Analytics & Reports</h1>
+        <p style="color: #6b7280; margin: 8px 0 0 0; font-size: 15px;">
+          View real-time analytics from your Google Sheet. Export data based on your needs.
+        </p>
+      </div>
+      <button class="refresh-btn" onclick="loadAnalytics()">
+        ↻ Refresh Data
+      </button>
+    </div>
+
+    <div id="loading" class="loading-spinner">
+      <h2>Loading analytics...</h2>
+      <p>Fetching the latest data from your Google Sheet.</p>
+    </div>
+
+    <div id="analyticsContent" style="display: none;">
+      <!-- Stat Cards -->
+      <div class="stats-row" id="statsRow"></div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3>📊 Requests by Status</h3>
+          <div class="chart-container">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>🔴 Requests by Priority</h3>
+          <div class="chart-container">
+            <canvas id="priorityChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>📍 Requests by Location</h3>
+          <div class="chart-container">
+            <canvas id="locationChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="margin-bottom: 0;">📈 Requests Over Time</h3>
+            <select id="timeRangeSelect" onchange="updateTimeChart()" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #d1d5db; font-family: inherit; font-size: 13px; outline: none; cursor: pointer;">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly" selected>Monthly</option>
+            </select>
+          </div>
+          <div class="chart-container">
+            <canvas id="timeChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Table -->
+      <div class="export-section">
+        <h2>📤 Export Data</h2>
+        <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Use the buttons below to export filtered data to CSV, Excel, or PDF. Use the search box to filter first, then export.</p>
+        <table id="exportTable" class="display" style="width:100%;">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Staff</th>
+              <th>Email</th>
+              <th>Location</th>
+              <th>Category</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Assigned To</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="exportTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <!-- DataTables Buttons -->
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+  <!-- JSZip for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <!-- pdfmake for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // Store chart instances so we can destroy them on refresh
+    let chartInstances = {};
+    let globalAnalyticsData = null;
+
+    function loadAnalytics() {
+      document.getElementById('analyticsContent').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+
+      // Destroy existing DataTable if it exists
+      if ($.fn.DataTable.isDataTable('#exportTable')) {
+        $('#exportTable').DataTable().destroy();
+      }
+
+      google.script.run
+        .withSuccessHandler(renderAnalytics)
+        .withFailureHandler(function (err) {
+          Swal.fire('Error', 'Failed to load analytics: ' + err, 'error');
+          document.getElementById('loading').innerHTML = 'Failed to load.';
+        })
+        .getAnalyticsData();
+    }
+
+    function renderAnalytics(data) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('analyticsContent').style.display = 'block';
+      globalAnalyticsData = data;
+
+      // ===== STAT CARDS =====
+      const sc = data.statusCounts;
+      const statsHtml = `
+        <div class="stat-card">
+          <div class="stat-number">${data.totalRequests}</div>
+          <div class="stat-label">Total Requests</div>
+        </div>
+        <div class="stat-card action">
+          <div class="stat-number">${sc['Action needed'] || 0}</div>
+          <div class="stat-label">Action Needed</div>
+        </div>
+        <div class="stat-card review">
+          <div class="stat-number">${sc['Under Review'] || 0}</div>
+          <div class="stat-label">Under Review</div>
+        </div>
+        <div class="stat-card progress">
+          <div class="stat-number">${sc['In Progress'] || 0}</div>
+          <div class="stat-label">In Progress</div>
+        </div>
+        <div class="stat-card completed">
+          <div class="stat-number">${sc['Completed'] || 0}</div>
+          <div class="stat-label">Completed</div>
+        </div>
+      `;
+      document.getElementById('statsRow').innerHTML = statsHtml;
+
+      // ===== CHARTS =====
+      // Destroy old charts
+      Object.values(chartInstances).forEach(c => c.destroy());
+      chartInstances = {};
+
+      // Status Doughnut
+      const statusLabels = Object.keys(data.statusCounts);
+      const statusValues = Object.values(data.statusCounts);
+      chartInstances.status = new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+          labels: statusLabels,
+          datasets: [{
+            data: statusValues,
+            backgroundColor: ['#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#6b7280'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } }
+          }
+        }
+      });
+
+      // Priority Bar
+      const prioLabels = Object.keys(data.priorityCounts);
+      const prioValues = Object.values(data.priorityCounts);
+      chartInstances.priority = new Chart(document.getElementById('priorityChart'), {
+        type: 'bar',
+        data: {
+          labels: prioLabels,
+          datasets: [{
+            label: 'Requests',
+            data: prioValues,
+            backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
+            borderRadius: 6,
+            borderSkipped: false
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } }
+          }
+        }
+      });
+
+      // Location Horizontal Bar (top 10)
+      const locEntries = Object.entries(data.locationCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+      const locLabels = locEntries.map(e => e[0]);
+      const locValues = locEntries.map(e => e[1]);
+      chartInstances.location = new Chart(document.getElementById('locationChart'), {
+        type: 'bar',
+        data: {
+          labels: locLabels,
+          datasets: [{
+            label: 'Requests',
+            data: locValues,
+            backgroundColor: '#6366f1',
+            borderRadius: 6,
+            borderSkipped: false
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { beginAtZero: true, ticks: { stepSize: 1 } }
+          }
+        }
+      });
+
+      // Render initial time chart
+      updateTimeChart();
+
+      // ===== EXPORT TABLE =====
+      let tableHtml = '';
+      data.tableRows.forEach(row => {
+        tableHtml += `
+          <tr>
+            <td>${row.submissionId}</td>
+            <td>${row.time}</td>
+            <td>${row.staffName}</td>
+            <td>${row.email}</td>
+            <td>${row.location}</td>
+            <td>${row.type}</td>
+            <td>${row.priority}</td>
+            <td>${row.status}</td>
+            <td>${row.assignedTo}</td>
+            <td style="max-width:200px; white-space:normal;">${row.details}</td>
+          </tr>
+        `;
+      });
+      document.getElementById('exportTableBody').innerHTML = tableHtml;
+
+      // Initialize DataTable with export buttons
+      $('#exportTable').DataTable({
+        order: [[0, 'desc']],
+        pageLength: 10,
+        dom: 'Bfrtip',
+        buttons: [
+          {
+            extend: 'csvHtml5',
+            text: '📄 Export CSV',
+            title: 'C64_Maintenance_Report',
+            exportOptions: { columns: ':visible' }
+          },
+          {
+            extend: 'excelHtml5',
+            text: '📊 Export Excel',
+            title: 'C64_Maintenance_Report',
+            exportOptions: { columns: ':visible' }
+          },
+          {
+            extend: 'pdfHtml5',
+            text: '📕 Export PDF',
+            title: 'C64 Maintenance Report',
+            orientation: 'landscape',
+            pageSize: 'A3',
+            exportOptions: { columns: ':visible' }
+          },
+          {
+            extend: 'print',
+            text: '🖨️ Print',
+            title: 'C64 Maintenance Report',
+            exportOptions: { columns: ':visible' }
+          }
+        ],
+        language: {
+          search: 'Filter records:',
+          lengthMenu: 'Show _MENU_ entries'
+        }
+      });
+    }
+
+    function updateTimeChart() {
+      if (!globalAnalyticsData) return;
+      const type = document.getElementById('timeRangeSelect').value;
+      
+      let entries = [];
+      if (type === 'daily') {
+        entries = Object.entries(globalAnalyticsData.dailyCounts);
+        entries.sort((a, b) => a[0].localeCompare(b[0])); // YYYY-MM-DD sorts naturally
+      } else if (type === 'weekly') {
+        entries = Object.entries(globalAnalyticsData.weeklyCounts);
+        entries.sort((a, b) => a[0].localeCompare(b[0])); // YYYY-Wxx sorts naturally
+      } else {
+        entries = Object.entries(globalAnalyticsData.monthlyCounts);
+        entries.sort((a, b) => {
+          const [mA, yA] = a[0].split('/').map(Number);
+          const [mB, yB] = b[0].split('/').map(Number);
+          return (yA * 12 + mA) - (yB * 12 + mB);
+        });
+      }
+      
+      const labels = entries.map(e => e[0]);
+      const values = entries.map(e => e[1]);
+      
+      if (chartInstances.time) {
+        chartInstances.time.destroy();
+      }
+      
+      chartInstances.time = new Chart(document.getElementById('timeChart'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Requests',
+            data: values,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#3b82f6',
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            borderWidth: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } }
+          }
+        }
+      });
+    }
+
+    // Load on start
+    window.onload = loadAnalytics;
+  </script>
+</body>
+
+</html>

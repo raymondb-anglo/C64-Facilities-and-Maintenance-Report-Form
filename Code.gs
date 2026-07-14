@@ -22,14 +22,21 @@ function setupPermissions() {
 
 /**
  * Serves the HTML pages.
- * If URL has ?page=officer, serves Dashboard.html. Otherwise serves Index.html (the form).
+ * ?page=officer  → Dashboard.html (Task Board / Request Manager)
+ * ?page=analytics → Analytics.html (Looker Studio embed & data export)
+ * (default)       → Index.html (the public submission form)
  */
 function doGet(e) {
   let page = e.parameter.page;
   if (page === 'officer') {
     return HtmlService.createTemplateFromFile('Dashboard')
       .evaluate()
-      .setTitle('Officer Dashboard - Maintenance')
+      .setTitle('Task Board - Maintenance Requests')
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+  } else if (page === 'analytics') {
+    return HtmlService.createTemplateFromFile('Analytics')
+      .evaluate()
+      .setTitle('Analytics & Reports - Maintenance')
       .addMetaTag('viewport', 'width=device-width, initial-scale=1');
   } else {
     return HtmlService.createTemplateFromFile('Index')
@@ -103,7 +110,8 @@ function processForm(data) {
       data.details,
       fileUrl,
       status,
-      '' // Remarks column
+      '', // Remarks column (L)
+      ''  // Assigned To column (M)
     ]);
     
     // 3. Prepare Email Content
@@ -198,7 +206,8 @@ function getSubmissions() {
       details: row[8],
       fileUrl: row[9],
       status: row[10],
-      remarks: row[11] || ''
+      remarks: row[11] || '',
+      assignedTo: row[12] || ''
     };
   }).reverse(); // Show newest first
 }
@@ -218,6 +227,20 @@ function saveRemarks(rowIndex, remarks) {
 }
 
 /**
+ * Saves the assigned-to email to Column M (13) in the sheet
+ */
+function saveAssignment(rowIndex, assignedEmail) {
+  try {
+    const sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
+    sheet.getRange(rowIndex, 13).setValue(assignedEmail);
+    return { success: true };
+  } catch (error) {
+    Logger.log("Error in saveAssignment: " + error.toString());
+    return { success: false, error: error.toString() };
+  }
+}
+
+/**
  * Updates status from Dashboard and sends notification email
  */
 function updateStatus(rowIndex, newStatus, remarks) {
@@ -232,8 +255,8 @@ function updateStatus(rowIndex, newStatus, remarks) {
       sheet.getRange(rowIndex, 12).setValue(remarks);
     }
     
-    // Fetch row data to send email
-    const row = sheet.getRange(rowIndex, 1, 1, 12).getDisplayValues()[0];
+    // Fetch row data to send email (now 13 columns to include Assigned To)
+    const row = sheet.getRange(rowIndex, 1, 1, 13).getDisplayValues()[0];
     const submissionId = row[0];
     const email = row[2];
     const staffName = row[3];
@@ -243,6 +266,7 @@ function updateStatus(rowIndex, newStatus, remarks) {
     const details = row[8];
     const fileUrl = row[9];
     const finalRemarks = row[11];
+    const assignedTo = (row[12] || '').trim();
     
     const summaryHtml = `
       <p><b>Request Summary</b></p>
@@ -251,6 +275,7 @@ function updateStatus(rowIndex, newStatus, remarks) {
       <p><b>Priority:</b> ${priority}</p>
       <p><b>Description:</b> ${details}</p>
       <p><b>Remarks:</b> ${finalRemarks || 'None'}</p>
+      <p><b>Assigned To:</b> ${assignedTo || 'Not yet assigned'}</p>
       <p><b>Image:</b> ${fileUrl ? `<a href="${fileUrl}">View Image</a>` : 'None'}</p>
     `;
     
@@ -285,11 +310,17 @@ function updateStatus(rowIndex, newStatus, remarks) {
       <p><b>Best regards,<br>Facilities & Maintenance Team<br>Anglo Singapore International School</b></p>
     `;
     
+    // Build CC list: always include the officer, plus the assigned person if set
+    let ccList = OFFICER_EMAIL;
+    if (assignedTo && assignedTo !== OFFICER_EMAIL) {
+      ccList = OFFICER_EMAIL + ',' + assignedTo;
+    }
+    
     MailApp.sendEmail({
       to: email,
-      cc: OFFICER_EMAIL,
+      cc: ccList,
       subject: subject,
-      body: 'Please enable HTML to view this email.', // Required field
+      body: 'Please enable HTML to view this email.',
       htmlBody: senderBodyHtml
     });
     
@@ -298,4 +329,101 @@ function updateStatus(rowIndex, newStatus, remarks) {
     Logger.log("Error in updateStatus: " + error.toString());
     return { success: false, error: error.toString() };
   }
+}
+
+/**
+ * Retrieves aggregated analytics data for the Analytics page charts and export table.
+ */
+function getAnalyticsData() {
+  const sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
+  const data = sheet.getDataRange().getDisplayValues();
+  const rows = data.slice(1); // skip headers
+
+  // Counts
+  const statusCounts = {};
+  const locationCounts = {};
+  const priorityCounts = {};
+  const dailyCounts = {};
+  const weeklyCounts = {};
+  const monthlyCounts = {};
+
+  // Raw rows for export table
+  const tableRows = [];
+
+  rows.forEach(row => {
+    const submissionId = row[0];
+    const time = row[1];
+    const email = row[2];
+    const staffName = row[3];
+    const location = row[4];
+    const type = row[6];
+    const priority = row[7];
+    const details = row[8];
+    const status = row[10];
+    const remarks = row[11] || '';
+    const assignedTo = row[12] || '';
+
+    // Status counts
+    statusCounts[status] = (statusCounts[status] || 0) + 1;
+
+    // Location counts (take first part before " - " if too long)
+    const locKey = location.length > 30 ? location.substring(0, 30) + '...' : location;
+    locationCounts[locKey] = (locationCounts[locKey] || 0) + 1;
+
+    // Priority counts
+    priorityCounts[priority] = (priorityCounts[priority] || 0) + 1;
+
+    // Date counts
+    try {
+      const dateObj = new Date(time);
+      if (!isNaN(dateObj.getTime())) {
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        
+        // Daily
+        const dayKey = `${year}-${month}-${day}`;
+        dailyCounts[dayKey] = (dailyCounts[dayKey] || 0) + 1;
+        
+        // Monthly
+        const monthKey = `${month}/${year}`;
+        monthlyCounts[monthKey] = (monthlyCounts[monthKey] || 0) + 1;
+        
+        // Weekly (approximate ISO week)
+        const d = new Date(Date.UTC(year, dateObj.getMonth(), dateObj.getDate()));
+        const dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+        const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+        const weekKey = `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+        weeklyCounts[weekKey] = (weeklyCounts[weekKey] || 0) + 1;
+      }
+    } catch (e) { /* skip bad dates */ }
+
+    // Table data
+    tableRows.push({
+      submissionId: submissionId,
+      time: time,
+      staffName: staffName,
+      email: email,
+      location: location,
+      type: type,
+      priority: priority,
+      details: details,
+      status: status,
+      remarks: remarks,
+      assignedTo: assignedTo
+    });
+  });
+
+  return {
+    totalRequests: rows.length,
+    statusCounts: statusCounts,
+    locationCounts: locationCounts,
+    priorityCounts: priorityCounts,
+    dailyCounts: dailyCounts,
+    weeklyCounts: weeklyCounts,
+    monthlyCounts: monthlyCounts,
+    tableRows: tableRows
+  };
 }

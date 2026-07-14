@@ -202,6 +202,40 @@
       cursor: not-allowed;
     }
 
+    .assign-input {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    .assign-input:disabled {
+      background-color: #f3f4f6;
+    }
+
+    .save-assign-btn {
+      background-color: #8b5cf6;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 4px;
+      float: right;
+    }
+
+    .save-assign-btn:hover {
+      background-color: #7c3aed;
+    }
+
+    .save-assign-btn:disabled {
+      background-color: #9ca3af;
+      cursor: not-allowed;
+    }
+
     .refresh-btn {
       background-color: #ffffff;
       border: 1px solid #d1d5db;
@@ -238,14 +272,87 @@
       text-decoration: underline;
       color: #2563eb;
     }
+
+    /* Navigation Bar */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+      padding: 14px 28px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-logo {
+      font-size: 22px;
+    }
+
+    .nav-title {
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 6px;
+    }
+
+    .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.25s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      text-decoration: none;
+    }
+
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
   </style>
 </head>
 
 <body>
+  <!-- Navigation Bar -->
+  <nav class="top-nav">
+    <div class="nav-brand">
+      <span class="nav-logo">🏢</span>
+      <span class="nav-title">C64 Facilities & Maintenance</span>
+    </div>
+    <div class="nav-links">
+      <a href="<?= ScriptApp.getService().getUrl() ?>?page=officer" class="nav-link active">
+        📋 Task Board
+      </a>
+      <a href="<?= ScriptApp.getService().getUrl() ?>?page=analytics" class="nav-link">
+        📊 Analytics & Reports
+      </a>
+    </div>
+  </nav>
+
   <div class="container">
     <div class="header">
       <div>
-        <h1>Dashboard</h1>
+        <h1>Task Board</h1>
         <p style="color: #6b7280; margin: 8px 0 0 0; font-size: 15px;">Manage C64 Facilities and Maintenance Requests
         </p>
       </div>
@@ -267,6 +374,7 @@
           <th>Location & Category</th>
           <th>Details</th>
           <th>Attachment</th>
+          <th style="min-width: 180px;">Assign To</th>
           <th style="min-width: 200px;">Remarks</th>
           <th>Action / Status</th>
         </tr>
@@ -352,6 +460,10 @@
                 ${sub.details}
               </td>
               <td>${fileLink}</td>
+              <td>
+                <input type="email" id="assign_${sub.rowIndex}" class="assign-input" value="${sub.assignedTo}" placeholder="email@example.com" ${disabledAttr}>
+                <button class="save-assign-btn" onclick="saveAssignment(${sub.rowIndex}, this)" ${disabledAttr}>Save</button>
+              </td>
               <td>
                 <textarea id="remarks_${sub.rowIndex}" class="remarks-box" ${disabledAttr} placeholder="Optional notes...">${sub.remarks}</textarea>
                 <button class="save-remarks-btn" onclick="saveRemarks(${sub.rowIndex}, this)" ${disabledAttr}>Save</button>
@@ -459,6 +571,33 @@
           btn.disabled = false;
         })
         .saveRemarks(rowIndex, remarks);
+    }
+
+    function saveAssignment(rowIndex, btn) {
+      const assignedEmail = document.getElementById('assign_' + rowIndex).value.trim();
+      btn.textContent = 'Saving...';
+      btn.disabled = true;
+
+      google.script.run
+        .withSuccessHandler((res) => {
+          if (res.success) {
+            btn.textContent = 'Saved!';
+            setTimeout(() => {
+              btn.textContent = 'Save';
+              btn.disabled = false;
+            }, 2000);
+          } else {
+            Swal.fire('Error', 'Failed to save: ' + res.error, 'error');
+            btn.textContent = 'Save';
+            btn.disabled = false;
+          }
+        })
+        .withFailureHandler((err) => {
+          Swal.fire('Error', 'Error connecting to server: ' + err, 'error');
+          btn.textContent = 'Save';
+          btn.disabled = false;
+        })
+        .saveAssignment(rowIndex, assignedEmail);
     }
 
     // Load on start

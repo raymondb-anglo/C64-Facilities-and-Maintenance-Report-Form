@@ -8,16 +8,18 @@ A custom, fully-featured Google Apps Script Web Application designed to streamli
 *   **Comprehensive Location Selection:** Includes a complete, dynamic dropdown of over 160 specific school locations across multiple buildings and floors.
 *   **Direct Google Drive Integration:** Users can upload images of maintenance issues directly. Images are securely and automatically saved to a designated Google Drive folder with smart sharing permissions to ensure accessibility for officers.
 *   **Google Sheets Database:** All submissions are instantly logged into a Google Sheet for permanent, easily accessible record-keeping.
-*   **Officer Dashboard:** A dedicated, secure dashboard (`?page=officer`) allowing the Facilities Team to review all incoming requests, view attached files, and dynamically update request statuses (e.g., Pending, Ongoing, Closed).
+*   **Task Assignment:** Officers can assign specific requests to team members by entering their email address directly in the dashboard.
+*   **Analytics & Reports Dashboard:** A powerful, built-in analytics page (`?page=analytics`) powered by Chart.js. It features dynamic filtering (daily/weekly/monthly), visual charts (status, priority, location), and a complete export suite (CSV, Excel, PDF, Print) without relying on external third-party BI tools.
 *   **Automated Email Notifications:**
     *   **Submission Confirmations:** Senders receive immediate confirmation emails.
     *   **Officer Alerts:** The Facilities Team is instantly notified of new requests with direct links to review.
-    *   **Status Updates:** When an officer updates a status in the dashboard, an automated email is sent to the requester detailing the update, with the officer automatically CC'd for transparency.
+    *   **Status Updates & Assignments:** When an officer updates a status or assigns a task, an automated email is sent to the requester detailing the update. Assigned team members are automatically CC'd.
 
 ## 🛠️ Technology Stack
 
 *   **Backend:** Google Apps Script (`Code.gs`)
-*   **Frontend:** HTML5, CSS3, JavaScript (`Index.html`, `Dashboard.html`)
+*   **Frontend:** HTML5, CSS3, JavaScript (`Index.html`, `Dashboard.html`, `Analytics.html`)
+*   **Libraries:** jQuery, DataTables (with export extensions), Chart.js, SweetAlert2
 *   **Data Storage:** Google Sheets, Google Drive
 *   **Email Delivery:** Google MailApp
 
@@ -27,7 +29,9 @@ A custom, fully-featured Google Apps Script Web Application designed to streamli
     *   Open your destination Google Sheet.
     *   Go to `Extensions` > `Apps Script`.
 2.  **Copy Files:**
-    *   Copy the contents of `Code.gs`, `Index.html`, and `Dashboard.html` from this repository into your Apps Script project.
+    *   Copy the contents of `Code.gs`, `Index.html`, `Dashboard.html`, and `Analytics.html` from this repository into your Apps Script project.
+3.  **Sheet Preparation:**
+    *   Ensure your destination Google Sheet has a header named `Assigned To` in Column M (the 13th column) to support the Task Assignment feature.
 3.  **Configuration:**
     *   In `Code.gs`, update the configuration variables at the top of the file:
         *   `SHEET_ID`: The ID of your Google Sheet.
