@@ -428,6 +428,70 @@
     let chartInstances = {};
     let globalAnalyticsData = null;
 
+    // ==========================================
+    // THAI FONT LOADING FOR PDF EXPORT
+    // ==========================================
+    // pdfmake's default Roboto font does not contain Thai glyphs,
+    // so we load Sarabun (a Google Font that supports Thai + Latin)
+    // into pdfmake's virtual file system (VFS) at page load time.
+    let thaiFontsLoaded = false;
+
+    async function loadSarabunFont() {
+      try {
+        const fontBaseUrl = 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/sarabun/';
+        const [regularResponse, boldResponse] = await Promise.all([
+          fetch(fontBaseUrl + 'Sarabun-Regular.ttf'),
+          fetch(fontBaseUrl + 'Sarabun-Bold.ttf')
+        ]);
+
+        if (!regularResponse.ok || !boldResponse.ok) {
+          throw new Error('Font fetch failed: ' + regularResponse.status + ' / ' + boldResponse.status);
+        }
+
+        const [regularBuffer, boldBuffer] = await Promise.all([
+          regularResponse.arrayBuffer(),
+          boldResponse.arrayBuffer()
+        ]);
+
+        // Convert ArrayBuffer to base64 string for pdfmake VFS
+        function arrayBufferToBase64(buffer) {
+          let binary = '';
+          const bytes = new Uint8Array(buffer);
+          const chunkSize = 8192; // Process in chunks to avoid call stack limits
+          for (let i = 0; i < bytes.byteLength; i += chunkSize) {
+            const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.byteLength));
+            binary += String.fromCharCode.apply(null, chunk);
+          }
+          return btoa(binary);
+        }
+
+        // Register font files in pdfmake's virtual file system
+        pdfMake.vfs['Sarabun-Regular.ttf'] = arrayBufferToBase64(regularBuffer);
+        pdfMake.vfs['Sarabun-Bold.ttf'] = arrayBufferToBase64(boldBuffer);
+
+        // Register font family with pdfmake (keep Roboto as fallback)
+        pdfMake.fonts = {
+          Roboto: {
+            normal: 'Roboto-Regular.ttf',
+            bold: 'Roboto-Medium.ttf',
+            italics: 'Roboto-Italic.ttf',
+            bolditalics: 'Roboto-MediumItalic.ttf'
+          },
+          Sarabun: {
+            normal: 'Sarabun-Regular.ttf',
+            bold: 'Sarabun-Bold.ttf',
+            italics: 'Sarabun-Regular.ttf',
+            bolditalics: 'Sarabun-Bold.ttf'
+          }
+        };
+
+        thaiFontsLoaded = true;
+        console.log('Sarabun Thai font loaded successfully for PDF export.');
+      } catch (err) {
+        console.warn('Failed to load Sarabun font. Thai characters in PDF export may not render correctly.', err);
+      }
+    }
+
     function loadAnalytics() {
       document.getElementById('analyticsContent').style.display = 'none';
       document.getElementById('loading').style.display = 'block';
@@ -590,7 +654,8 @@
             extend: 'csvHtml5',
             text: '📄 Export CSV',
             title: 'C64_Maintenance_Report',
-            exportOptions: { columns: ':visible' }
+            exportOptions: { columns: ':visible' },
+            bom: true  // Prepend UTF-8 BOM so Excel reads Thai characters correctly
           },
           {
             extend: 'excelHtml5',
@@ -604,7 +669,14 @@
             title: 'C64 Maintenance Report',
             orientation: 'landscape',
             pageSize: 'A3',
-            exportOptions: { columns: ':visible' }
+            exportOptions: { columns: ':visible' },
+            customize: function(doc) {
+              // Use Sarabun font for full Thai language support in PDF
+              doc.defaultStyle.font = 'Sarabun';
+              doc.styles.tableHeader.font = 'Sarabun';
+              doc.styles.title.font = 'Sarabun';
+              doc.styles.message.font = 'Sarabun';
+            }
           },
           {
             extend: 'print',
@@ -675,8 +747,11 @@
       });
     }
 
-    // Load on start
-    window.onload = loadAnalytics;
+    // Load on start: fetch analytics data AND preload Thai fonts in parallel
+    window.onload = function() {
+      loadSarabunFont();  // Start loading Thai fonts immediately (async, non-blocking)
+      loadAnalytics();    // Start loading analytics data
+    };
   </script>
 </body>
 
