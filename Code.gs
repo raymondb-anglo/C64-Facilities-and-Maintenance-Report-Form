@@ -124,12 +124,36 @@ function processForm(data) {
     `;
 
     const summaryHtml = `
-      <p><b>Request Summary</b></p>
-      <p><b>Location:</b> ${data.location}</p>
-      <p><b>Category:</b> ${data.type}</p>
-      <p><b>Priority:</b> ${data.priority}</p>
-      <p><b>Description:</b> ${data.details}</p>
-      <p><b>Image:</b> <a href="${fileUrl}">${fileName || 'None'}</a></p>
+      <table style="width: 100%; max-width: 600px; border-collapse: collapse; font-family: sans-serif; font-size: 14px; border: 1px solid #e5e7eb;">
+        <tr style="background-color: #f9fafb;">
+          <td style="padding: 12px; font-weight: bold; width: 30%; border: 1px solid #e5e7eb;">Issue Number</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${submissionId}</td>
+        </tr>
+        <tr style="background-color: #ffffff;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Requested by</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;"><a href="mailto:${data.email}">${data.email}</a></td>
+        </tr>
+        <tr style="background-color: #f9fafb;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Location</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${data.location}</td>
+        </tr>
+        <tr style="background-color: #ffffff;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Issue</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${data.type}</td>
+        </tr>
+        <tr style="background-color: #f9fafb;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Priority</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${data.priority}</td>
+        </tr>
+        <tr style="background-color: #ffffff;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Issue Details</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${data.details}</td>
+        </tr>
+        <tr style="background-color: #f9fafb;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Image</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${fileName ? `<a href="${fileUrl}">${fileName}</a>` : 'None'}</td>
+        </tr>
+      </table>
     `;
     
     // Get the script URL for the Review button
@@ -269,14 +293,44 @@ function updateStatus(rowIndex, newStatus, remarks) {
     const assignedTo = (row[12] || '').trim();
     
     const summaryHtml = `
-      <p><b>Request Summary</b></p>
-      <p><b>Location:</b> ${location}</p>
-      <p><b>Category:</b> ${type}</p>
-      <p><b>Priority:</b> ${priority}</p>
-      <p><b>Description:</b> ${details}</p>
-      <p><b>Remarks:</b> ${finalRemarks || 'None'}</p>
-      <p><b>Assigned To:</b> ${assignedTo || 'Not yet assigned'}</p>
-      <p><b>Image:</b> ${fileUrl ? `<a href="${fileUrl}">View Image</a>` : 'None'}</p>
+      <table style="width: 100%; max-width: 600px; border-collapse: collapse; font-family: sans-serif; font-size: 14px; border: 1px solid #e5e7eb; margin-top: 15px;">
+        <tr style="background-color: #f9fafb;">
+          <td style="padding: 12px; font-weight: bold; width: 30%; border: 1px solid #e5e7eb;">Issue Number</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${submissionId}</td>
+        </tr>
+        <tr style="background-color: #ffffff;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Requested by</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;"><a href="mailto:${email}">${email}</a></td>
+        </tr>
+        <tr style="background-color: #f9fafb;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Location</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${location}</td>
+        </tr>
+        <tr style="background-color: #ffffff;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Issue</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${type}</td>
+        </tr>
+        <tr style="background-color: #f9fafb;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Priority</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${priority}</td>
+        </tr>
+        <tr style="background-color: #ffffff;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Issue Details</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${details}</td>
+        </tr>
+        <tr style="background-color: #f9fafb;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Remarks</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${finalRemarks || 'None'}</td>
+        </tr>
+        <tr style="background-color: #ffffff;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Assigned To</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${assignedTo || 'Not yet assigned'}</td>
+        </tr>
+        <tr style="background-color: #f9fafb;">
+          <td style="padding: 12px; font-weight: bold; border: 1px solid #e5e7eb;">Image</td>
+          <td style="padding: 12px; border: 1px solid #e5e7eb;">${fileUrl ? `<a href="${fileUrl}">View Image</a>` : 'None'}</td>
+        </tr>
+      </table>
     `;
     
     let subject = `Maintenance Request [${submissionId}]`;
