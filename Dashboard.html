@@ -437,7 +437,15 @@
           let badgeClass = getBadgeClass(sub.status);
 
           // Disable dropdown and remarks if status is Completed
-          let disabledAttr = sub.status === 'Completed' ? 'disabled' : '';
+          // Determine which fields should be disabled based on status lifecycle
+          // Status lifecycle: Action needed → Under Review → In Progress → Completed
+          const statusOrder = ['Action needed', 'Under Review', 'In Progress', 'Completed'];
+          const currentIdx = statusOrder.indexOf(sub.status);
+          let isCompleted = sub.status === 'Completed';
+          let isInProgressOrDone = sub.status === 'In Progress' || isCompleted;
+          let assignDisabledAttr = isInProgressOrDone ? 'disabled' : '';
+          let remarksDisabledAttr = isCompleted ? 'disabled' : '';
+          let statusDisabledAttr = isCompleted ? 'disabled' : '';
 
           // DataTables uses data-sort or data-order for sorting complex HTML columns.
 
@@ -461,20 +469,20 @@
               </td>
               <td>${fileLink}</td>
               <td>
-                <input type="email" id="assign_${sub.rowIndex}" class="assign-input" value="${sub.assignedTo}" placeholder="email@example.com" ${disabledAttr}>
-                <button class="save-assign-btn" onclick="saveAssignment(${sub.rowIndex}, this)" ${disabledAttr}>Save</button>
+                <input type="email" id="assign_${sub.rowIndex}" class="assign-input" value="${sub.assignedTo}" placeholder="email@example.com" ${assignDisabledAttr}>
+                <button class="save-assign-btn" onclick="saveAssignment(${sub.rowIndex}, this)" ${assignDisabledAttr}>Save</button>
               </td>
               <td>
-                <textarea id="remarks_${sub.rowIndex}" class="remarks-box" ${disabledAttr} placeholder="Optional notes...">${sub.remarks}</textarea>
-                <button class="save-remarks-btn" onclick="saveRemarks(${sub.rowIndex}, this)" ${disabledAttr}>Save</button>
+                <textarea id="remarks_${sub.rowIndex}" class="remarks-box" ${remarksDisabledAttr} placeholder="Optional notes...">${sub.remarks}</textarea>
+                <button class="save-remarks-btn" onclick="saveRemarks(${sub.rowIndex}, this)" ${remarksDisabledAttr}>Save</button>
               </td>
               <td data-search="${sub.status}">
                 <span class="badge ${badgeClass}">${sub.status}</span><br>
-                <select class="status-select" onchange="updateStatus(${sub.rowIndex}, this)" ${disabledAttr}>
+                <select class="status-select" onchange="updateStatus(${sub.rowIndex}, this)" ${statusDisabledAttr}>
                   <option value="" disabled selected>Change to...</option>
-                  <option value="Under Review" ${sub.status === 'Under Review' ? 'disabled hidden' : ''}>Under Review</option>
-                  <option value="In Progress" ${sub.status === 'In Progress' ? 'disabled hidden' : ''}>In Progress</option>
-                  <option value="Completed" ${sub.status === 'Completed' ? 'disabled hidden' : ''}>Completed</option>
+                  ${currentIdx < 1 ? '<option value="Under Review">Under Review</option>' : ''}
+                  ${currentIdx < 2 ? '<option value="In Progress">In Progress</option>' : ''}
+                  ${currentIdx < 3 ? '<option value="Completed">Completed</option>' : ''}
                 </select>
               </td>
             </tr>
@@ -512,8 +520,17 @@
       }).then((result) => {
         if (result.isConfirmed) {
           selectElement.disabled = true;
-          const originalText = selectElement.options[selectElement.selectedIndex].text;
           selectElement.options[selectElement.selectedIndex].text = 'Updating...';
+
+          // Immediately disable all interactive fields in this row to prevent race conditions
+          const assignInput = document.getElementById('assign_' + rowIndex);
+          const remarksInput = document.getElementById('remarks_' + rowIndex);
+          if (assignInput) assignInput.disabled = true;
+          if (remarksInput) remarksInput.disabled = true;
+          const currentRow = selectElement.closest('tr');
+          if (currentRow) {
+            currentRow.querySelectorAll('.save-assign-btn, .save-remarks-btn').forEach(btn => btn.disabled = true);
+          }
 
           google.script.run
             .withSuccessHandler((res) => {
@@ -529,14 +546,12 @@
                 });
               } else {
                 Swal.fire('Error', 'Failed to update: ' + res.error, 'error');
-                selectElement.disabled = false;
-                selectElement.options[selectElement.selectedIndex].text = originalText;
+                loadData(); // Reload to restore correct field states
               }
             })
             .withFailureHandler((err) => {
               Swal.fire('Error', 'Error connecting to server: ' + err, 'error');
-              selectElement.disabled = false;
-              selectElement.options[selectElement.selectedIndex].text = originalText;
+              loadData(); // Reload to restore correct field states
             })
             .updateStatus(rowIndex, newStatus, remarks);
         } else {

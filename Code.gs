@@ -242,6 +242,11 @@ function getSubmissions() {
 function saveRemarks(rowIndex, remarks) {
   try {
     const sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
+    // Server-side guard: reject saves on completed tickets
+    const currentStatus = sheet.getRange(rowIndex, 11).getValue().toString().trim();
+    if (currentStatus === 'Completed') {
+      return { success: false, error: 'Cannot update remarks: ticket is already Completed.' };
+    }
     sheet.getRange(rowIndex, 12).setValue(remarks);
     return { success: true };
   } catch (error) {
@@ -256,6 +261,11 @@ function saveRemarks(rowIndex, remarks) {
 function saveAssignment(rowIndex, assignedEmail) {
   try {
     const sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
+    // Server-side guard: reject saves when ticket is In Progress or Completed
+    const currentStatus = sheet.getRange(rowIndex, 11).getValue().toString().trim();
+    if (currentStatus === 'In Progress' || currentStatus === 'Completed') {
+      return { success: false, error: 'Cannot change assignment: ticket is already ' + currentStatus + '.' };
+    }
     sheet.getRange(rowIndex, 13).setValue(assignedEmail);
     return { success: true };
   } catch (error) {
@@ -270,6 +280,15 @@ function saveAssignment(rowIndex, assignedEmail) {
 function updateStatus(rowIndex, newStatus, remarks) {
   try {
     const sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
+    
+    // Server-side guard: prevent backward status changes
+    const statusOrder = ['Action needed', 'Under Review', 'In Progress', 'Completed'];
+    const currentStatus = sheet.getRange(rowIndex, 11).getValue().toString().trim();
+    const currentIdx = statusOrder.indexOf(currentStatus);
+    const newIdx = statusOrder.indexOf(newStatus);
+    if (currentIdx !== -1 && newIdx !== -1 && newIdx <= currentIdx) {
+      return { success: false, error: 'Cannot move status backward. Current: ' + currentStatus + ', Requested: ' + newStatus };
+    }
     
     // Update status column (Column K = 11)
     sheet.getRange(rowIndex, 11).setValue(newStatus);
