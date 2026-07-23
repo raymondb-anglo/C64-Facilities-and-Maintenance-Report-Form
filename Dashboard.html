@@ -575,6 +575,15 @@
 
     function saveAssignment(rowIndex, btn) {
       const assignedEmail = document.getElementById('assign_' + rowIndex).value.trim();
+      
+      if (assignedEmail !== '') {
+        const emailPattern = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(assignedEmail)) {
+          Swal.fire('Invalid Email', 'Please enter a valid email address (e.g., email@domain.com)', 'warning');
+          return;
+        }
+      }
+
       btn.textContent = 'Saving...';
       btn.disabled = true;
 
